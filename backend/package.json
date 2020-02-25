@@ -1,0 +1,35 @@
+{
+  "name": "hero-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc --watch",
+    "nodemon": "nodemon dist/app",
+    "server": "concurrently \"npm run tsc\" \"npm run nodemon\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axel-saredo/hero-list.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/axel-saredo/hero-list/issues"
+  },
+  "homepage": "https://github.com/axel-saredo/hero-list#readme",
+  "devDependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.2"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.2",
+    "@types/mongoose": "^5.7.1",
+    "concurrently": "^5.1.0",
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.9.2",
+    "typescript": "^3.8.2"
+  }
+}
