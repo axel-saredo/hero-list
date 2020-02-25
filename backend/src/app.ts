@@ -1,8 +1,14 @@
 import express, { Request, Response } from 'express';
+import { json } from 'body-parser';
 
 import { connectDb } from './config/db';
+import heroRoute from './routes/heroes';
 
 const app = express();
+
+app.use(json());
+
+app.use('/heroes', heroRoute);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Working!');
