@@ -6,7 +6,7 @@ dotenv.config({ path: '{__dirname}/../../.env' });
 
 const db = process.env.MONGO_URI as string;
 
-export default async function connectDb() {
+export async function connectDb() {
   try {
     await mongoose.connect(db, {
       useNewUrlParser: true,
