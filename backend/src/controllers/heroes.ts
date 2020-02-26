@@ -1,107 +1,81 @@
 import { RequestHandler } from 'express';
 
-import { Hero } from '../models/hero.model';
+import Hero, { IHero } from '../models/hero.model';
 
-const mockedHeroes: Hero[] = [
-  {
-    id: '1',
-    name: 'Superman',
-    superpowers: ['Super strength', 'Flight', 'Super Senses'],
-    weaknesses: ['Kryptonite'],
-    img:
-      'https://www.fondoswiki.com/Uploads/fondoswiki.com/Resoluciones/3728-1920x1080.jpg'
-  },
-  {
-    id: '2',
-    name: 'Wonder Woman',
-    superpowers: ['Super strength', 'Durability', 'Flight', 'Super speed'],
-    weaknesses: ['Herself', 'Posion'],
-    img:
-      'https://comicvine1.cbsistatic.com/uploads/original/9/93595/2247136-ww.jpg'
-  },
-  {
-    id: '3',
-    name: 'Batman',
-    superpowers: ['Super intelligence', 'Money'],
-    weaknesses: [],
-    img:
-      'https://i2.wp.com/antifaz.org.mx/wp-content/uploads/2019/03/Batman80.jpeg?fit=1200%2C675&ssl=1'
-  }
-];
-
-export const getHeroes: RequestHandler = (req, res, next) => {
+export const getHeroes: RequestHandler = async (req, res, next) => {
   try {
-    res.json({ heroes: mockedHeroes });
+    const heroes = await Hero.find((err: Error, heroes: IHero[]) => {
+      if (err) {
+        return res.status(500).json({ msg: err.message });
+      } else {
+        return heroes;
+      }
+    });
+    return res.json({ heroes: heroes });
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    return res.status(500).json({ msg: error.message });
   }
 };
 
-export const addHero: RequestHandler = (req, res, next) => {
+export const addHero: RequestHandler = async (req, res, next) => {
   try {
-    const heroInfo = req.body as Hero;
-    const newHero = new Hero(
-      heroInfo.id,
-      heroInfo.name,
-      heroInfo.superpowers,
-      heroInfo.weaknesses,
-      heroInfo.img
-    );
+    const newHero = new Hero(req.body);
 
-    mockedHeroes.push(newHero);
-
-    res
-      .status(201)
-      .json({ message: 'Created a new hero!', createdHero: newHero });
-  } catch (error) {
-    res.status(500).json({ msg: error.message });
-  }
-};
-
-export const updateHero: RequestHandler<{ id: string }> = (req, res, next) => {
-  try {
-    const heroId = req.params.id;
-    const updatedHero = req.body as Hero;
-
-    const heroIndex = mockedHeroes.findIndex(hero => hero.id === heroId);
-
-    if (heroIndex < 0) {
-      throw new Error('Could not find hero.');
-    }
-
-    mockedHeroes[heroIndex] = new Hero(
-      mockedHeroes[heroIndex].id,
-      updatedHero.name,
-      updatedHero.superpowers,
-      updatedHero.weaknesses,
-      updatedHero.img
-    );
-
-    res.json({
-      msg: 'Hero successfully updated!',
-      updatedHero: mockedHeroes[heroIndex]
+    await newHero.save((err: Error) => {
+      if (err) {
+        return res.status(500).json({ msg: err.message });
+      } else {
+        res
+          .status(201)
+          .json({ message: 'Created a new hero!', createdHero: newHero });
+      }
     });
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    return res.status(500).json({ msg: error.message });
   }
 };
 
-export const deleteHero: RequestHandler<{ id: string }> = (req, res, next) => {
+export const updateHero: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  next
+) => {
   try {
     const heroId = req.params.id;
+    const updatedHero = req.body as IHero;
 
-    const heroIndex = mockedHeroes.findIndex(hero => hero.id === heroId);
+    await Hero.findByIdAndUpdate(
+      heroId,
+      updatedHero,
+      (err: Error, hero: any) => {
+        if (err) {
+          return res.status(500).json({ msg: err.message });
+        } else {
+          return res.status(201).json({
+            message: 'Hero successfully updated!',
+            createdHero: hero
+          });
+        }
+      }
+    );
+  } catch (error) {
+    return res.status(500).json({ msg: error.message });
+  }
+};
 
-    if (heroIndex < 0) {
-      throw new Error('Could not find hero.');
-    }
+export const deleteHero: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const heroId = req.params.id;
+    await Hero.findByIdAndRemove(heroId);
 
-    mockedHeroes.splice(heroIndex, 1);
-
-    res.json({
+    return res.json({
       msg: 'Hero successfully deleted!'
     });
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    return res.status(500).json({ msg: error.message });
   }
 };
