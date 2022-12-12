@@ -22,7 +22,7 @@
   "homepage": "https://github.com/axel-saredo/hero-list#readme",
   "devDependencies": {
     "class-transformer": "^0.2.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "nodemon": "^2.0.2"
   },
   "dependencies": {
